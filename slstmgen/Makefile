@@ -1,0 +1,20 @@
+
+CFLAGS= -g 
+
+simple:	gen.h simple.cpp 
+	g++ $(CFLAGS) -o simple simple.cpp -lm
+
+test:	simple
+	grep pred xsimple.out > /tmp/xsimple.out
+	echo "testing simple ..."
+	-(./simple | grep pred | sdiff -w80 /tmp/xsimple.out -)
+	-rm -f /tmp/xsimple.out
+
+copy:	
+	cp gen.h gen_* gen.cpp /home/vivado/rfnoc/src/rfnoc-hls-ml/rfnoc/hls/ex_lstm/gen/ 
+
+gen.h:	xsimple.py lstmgen.py 
+	python xsimple.py >xsimple.out
+
+clean:
+	-rm -rf *.o *.dSYM *.pyc gen xsimple.out gen.h gen_w.h gen_dotp.h gen_streamx.h gen_streamy.h gen_io.h simple.o simple __pycache__ *.data gen.cpp

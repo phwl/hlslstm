@@ -1,0 +1,37 @@
+
+\section{Introduction}
+
+Long-short term memories have been used with great success in time-series
+prediction problems. The goals of this tutorial are:
+
+\begin{itemize}
+\item Practise translating mathematical descriptions in papers into hardware designs
+\item Gain experience in using high level synthesis
+\item Gain experience in design optimisation.
+\end{itemize}
+
+
+
+\section{Laboratory Questions}
+In answering these questions, marks will be awarded not only for correctness
+but also understandability and elegance of the solution. 
+
+\begin{enumerate}
+\item Walsh function finite state machine (30\%).
+Write out the state transition table for a finite state machine
+which generates the Walsh sequence (in Paley order) for $n=31$ using the minimum
+number of states, i.e. it should generate the entire sequence in 32 cycles. 
+Develop a hardware description language (HDL) (Verilog or VHDL) implementation of and simulate it
+using Modelsim to demonstrate its operation. 
+\item Walsh function program (30\%). Write a C program which takes $n$ as an
+input, and outputs $P_n(t/T)$ where $t$ represents a discrete time step and $T$ is a positive integer representing the maximum number of time steps ($t \in \{0,1, \ldots, T\}$). Your program should only use simple integer operations and avoid any floating point arithmetic. A hint is that you can map
+the $\{-1,+1\}$ binary states to $\{0,1\}$ and then replace the multiplication
+in Equation~\ref{eq:walshpaley} with a Boolean AND operation.
+\item Module generator (40\%). Modify your C program so it can generate
+the appropriate HDL for the Walsh sequence in sequency order, given $n$ 
+and $T$ as inputs.
+\item General circuit (bonus 20\%). Modify your HDL code of the previous
+section so that the order
+can be selected at run-time. Your circuit should include an additional 
+$m$-bit input which specifies $n$ in Equation~\ref{eq:walsh}. 
+\end{enumerate}
