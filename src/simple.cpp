@@ -4,37 +4,37 @@
 #include "gen_w.h"
 #include "gen_io.h"
 
-l_t
-mysigmoid(l_t x)
+double
+mysigmoid(double x)
 {
 	return 1.0 / (1.0 + exp(-x));
 }
 
-l_t
-mytanh(l_t x)
+double
+mytanh(double x)
 {
-	l_t a = exp(x);
-	l_t b = exp(-x);
+	double a = exp(x);
+	double b = exp(-x);
 
 	return (a - b)/(a + b);
 }
 
 void
-vtanh(l_t a[], int n)
+vtanh(double a[], int n)
 {
     for (int i = 0; i < n; i++)
         a[i] = mytanh(a[i]);
 }
 
 void
-vcp(l_t y[], l_t a[], int n)
+vcp(double y[], double a[], int n)
 {
     for (int i = 0; i < n; i++)
         y[i] = a[i];
 }
 
 void
-vprint(char const *s, l_t a[], int n)
+vprint(char const *s, double a[], int n)
 {
     printf("vprint(%s) ", s);
     for (int i = 0; i < n; i++)
@@ -43,21 +43,21 @@ vprint(char const *s, l_t a[], int n)
 }
 
 void
-vmul(l_t y[], l_t a[], l_t b[], int n)
+vmul(double y[], double a[], double b[], int n)
 {
     for (int i = 0; i < n; i++)
         y[i] = a[i] * b[i];
 }
 
 void
-vmulsum(l_t y[], l_t a[], l_t b[], l_t c[], l_t d[], int n)
+vmulsum(double y[], double a[], double b[], double c[], double d[], int n)
 {
     for (int i = 0; i < n; i++)
         y[i] = a[i] * b[i] + c[i] * d[i];
 }
 
 void
-vplusbias(l_t a[], l_t b, int n)
+vplusbias(double a[], double b, int n)
 {
     for (int i = 0; i < n; i++)
         a[i] = a[i] + b;
@@ -65,16 +65,16 @@ vplusbias(l_t a[], l_t b, int n)
 
 /* apply sigmoid to a vector */
 void
-vsigmoid(l_t a[], int n)
+vsigmoid(double a[], int n)
 {
     for (int i = 0; i < n; i++)
     	a[i] = mysigmoid(a[i]);
 }
 
 void
-maxpb(l_t y[], l_t x[], l_t w[], l_t b[], const int ni, const int nj)
+maxpb(double y[], double x[], double w[], double b[], const int ni, const int nj)
 {
-	l_t acc;
+	double acc;
 
 	// move clearing of y to inner loop to make a perfect loop
     for (int i = 0; i < ni; i++)
@@ -94,22 +94,22 @@ maxpb(l_t y[], l_t x[], l_t w[], l_t b[], const int ni, const int nj)
 ** parameter passing and hardware implementation
 */
 void
-lstm(l_t c[], l_t h[], l_t x[])
+lstm(double c[], double h[], double x[])
 {
     /* state information */
-    static l_t new_c[L_YDIM];
+    static double new_c[L_YDIM];
 
-    static l_t new_h[L_YDIM];
-    static l_t xc[L_XDIM + L_YDIM];
-    static l_t r[4 * L_YDIM];
-    static l_t *i, *j, *f, *o;
+    static double new_h[L_YDIM];
+    static double xc[L_XDIM + L_YDIM];
+    static double r[4 * L_YDIM];
+    static double *i, *j, *f, *o;
 
     /* xc = np.hstack((x,  h)) */
-    vcp((l_t *)xc, x, L_XDIM);
+    vcp((double *)xc, x, L_XDIM);
     vcp(xc + L_XDIM, h, L_YDIM);
 
     /* [i, j, f, o] = np.split(np.dot(xc, self.w) + self.b, 4) */
-    maxpb(r, xc, (l_t *)l_w, l_b, 4 * L_YDIM, L_XDIM + L_YDIM);
+    maxpb(r, xc, (double *)l_w, l_b, 4 * L_YDIM, L_XDIM + L_YDIM);
     i = r + 0 * L_YDIM;
     j = r + 1 * L_YDIM;
     f = r + 2 * L_YDIM;
@@ -135,8 +135,8 @@ lstm(l_t c[], l_t h[], l_t x[])
 int
 main()
 {
-    static l_t c[L_YDIM];
-    static l_t h[L_YDIM];
+    static double c[L_YDIM];
+    static double h[L_YDIM];
 
     /* pass the input patterns to the lstm */
     for (int i = 0; i < L_PATS; i++) 

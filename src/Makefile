@@ -1,5 +1,5 @@
 
-CFLAGS= -g 
+CFLAGS= -p  
 
 simple:	gen.h simple.cpp 
 	g++ $(CFLAGS) -o simple simple.cpp -lm

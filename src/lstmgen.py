@@ -34,11 +34,11 @@ class cgen:
         pa = ' = {'
         if (xa.ndim == 1):
            ni = len(xa)
-           p = 'l_t %s[%d]' % (name, ni)
+           p = 'double %s[%d]' % (name, ni)
            astr = out1d(xa)
         else:
            (ni, nj) = xa.shape
-           p = 'l_t %s[%d][%d]' % (name, ni, nj)
+           p = 'double %s[%d][%d]' % (name, ni, nj)
            astr = ',\n'.join(map(out1d, [xa[i, :] for i in range(ni)]))
         if outvals: 	# print the actual array
            s = p + pa + astr + '};\n'
@@ -77,8 +77,7 @@ class cgen:
         fh.write('#define %s %d\n' % ('L_XDIM', self.xdim))
         fh.write('#define %s %d\n' % ('L_YDIM', self.ydim))
         fh.write('#define %s %d\n' % ('L_PATS', y.shape[0]))
-        fh.write('typedef double l_t;\n')
-        fh.write('extern void lstm(l_t c[L_YDIM], l_t h[L_YDIM], l_t x[L_XDIM]);\n')
+        fh.write('extern void lstm(double c[L_YDIM], double h[L_YDIM], double x[L_XDIM]);\n')
         fh.write(self.genarray(0, "l_x", x))
         fh.write(self.genarray(0, "l_y", y))
         fh.close()

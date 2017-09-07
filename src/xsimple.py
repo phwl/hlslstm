@@ -19,15 +19,17 @@ import tensorflow as tf
 from lstmgen import cgen
 from tensorflow.python import debug as tf_debug
 
+# this function generates an input set (there is no output in this example)
 def generate_sequence_data(input_length, batch_size, sequence_length):
-    # sequence data is 60 inputs long and each input is of length 4
-    # batch is length 10
     train_input = []
     for i in range(batch_size):
         batch = []
         for j in range(sequence_length):
-            inp = np.random.rand(input_length) / 5
+			# generate a input vector of small numbers
+            inp = np.random.rand(input_length) / 3
+			# add it to the input set
             batch.append(inp)
+		# add the training set generated to the batch
         train_input.append(batch)
     return train_input
 
@@ -37,12 +39,12 @@ def run():
     # the graph consists of an input placeholder and the LSTM cell
     #
     batch_size = 1
-    sequence_length = 12
-    num_hidden = 32
-    input_length = 32
+    sequence_length = 4
+    num_hidden = 3
+    input_length = 2
     train_input = generate_sequence_data(input_length, batch_size, sequence_length)
 
-    # PHASE 1 - build the computation graph
+    # PHASE 1 - build the computation graph (just feedforward part of LSTM)
     # create a placeholder for the inputs
     input_placeholder = tf.placeholder(tf.float32, shape=(batch_size, sequence_length, input_length))
     # create the RNN cell
@@ -54,33 +56,23 @@ def run():
     init_op = tf.global_variables_initializer()
 
     with tf.Session() as sess:
-        # sess = tf_debug.LocalCLIDebugWrapperSession(sess)
         sess.run(init_op)
         inp = train_input[0:batch_size]
-        # returns the values for each hidden unit at each step of computation
-        # this returns an array of length batch_size
-        # each element of that array is an array of length sequence_length
-        # each element of that array is an array of length num_hidden
 
         outputs = sess.run(output, {input_placeholder: inp})
         print("output values: ")
         print(outputs)
-        # returns a LSTMStateTuple where c = cell state and h = output value
         states = sess.run(state,{input_placeholder: inp})
         print("internal states: ")
         print(states)
 
     # print weights
-        cg = cgen(input_length, num_hidden, tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES))
+        cg = cgen(input_length, num_hidden, 
+		tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES))
         state = [np.zeros(num_hidden), np.zeros(num_hidden)]
         for p in train_input[0]:
             output, state = cg.ff(p, state)
         cg.gen((np.array(train_input))[0], outputs[0])
 
 if __name__ == "__main__":
-    # arguments are
-    #   num_hidden, normalization method, max or sum
     run()
-
-
-
