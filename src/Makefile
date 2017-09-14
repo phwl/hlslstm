@@ -10,9 +10,6 @@ test:	simple
 	-(./simple | grep pred | sdiff -w80 /tmp/xsimple.out -)
 	-rm -f /tmp/xsimple.out
 
-copy:	
-	cp gen.h gen_* gen.cpp /home/vivado/rfnoc/src/rfnoc-hls-ml/rfnoc/hls/ex_lstm/gen/ 
-
 gen.h:	xsimple.py lstmgen.py 
 	python xsimple.py >xsimple.out
 
