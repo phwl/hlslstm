@@ -14,4 +14,4 @@ gen.h:	xsimple.py lstmgen.py
 	python xsimple.py >xsimple.out
 
 clean:
-	-rm -rf *.o *.dSYM *.pyc gen xsimple.out gen.h gen_w.h gen_dotp.h gen_streamx.h gen_streamy.h gen_io.h simple.o simple __pycache__ *.data gen.cpp
+	-rm -rf *.o *.dSYM *.pyc gen xsimple.out gen.h gen_w.h gen_io.h simple.o simple __pycache__ *.data gen.cpp
