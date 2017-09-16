@@ -96,13 +96,18 @@ maxpb(double y[], double x[], double w[], double b[], const int ni, const int nj
 void
 lstm(double c[], double h[], double x[])
 {
+    /* constant offsets used to access the i, j, f and o parts of r */
+    #define	pi (r + 0 * L_YDIM)
+    #define	pj (r + 1 * L_YDIM)
+    #define	pf (r + 2 * L_YDIM)
+    #define	po (r + 3 * L_YDIM)
+
     /* state information */
     static double new_c[L_YDIM];
 
     static double new_h[L_YDIM];
     static double xc[L_XDIM + L_YDIM];
     static double r[4 * L_YDIM];
-    static double *i, *j, *f, *o;
 
     /* xc = np.hstack((x,  h)) */
     vcp((double *)xc, x, L_XDIM);
@@ -110,22 +115,18 @@ lstm(double c[], double h[], double x[])
 
     /* [i, j, f, o] = np.split(np.dot(xc, self.w) + self.b, 4) */
     maxpb(r, xc, (double *)l_w, l_b, 4 * L_YDIM, L_XDIM + L_YDIM);
-    i = r + 0 * L_YDIM;
-    j = r + 1 * L_YDIM;
-    f = r + 2 * L_YDIM;
-    o = r + 3 * L_YDIM;
 
-    vplusbias(f, 1.0, L_YDIM);
-    vsigmoid(f, L_YDIM);
-    vsigmoid(i, L_YDIM);
-    vtanh(j, L_YDIM);
-    vmulsum(new_c, c, f, i, j, L_YDIM);
+    vplusbias(pf, 1.0, L_YDIM);
+    vsigmoid(pf, L_YDIM);
+    vsigmoid(pi, L_YDIM);
+    vtanh(pj, L_YDIM);
+    vmulsum(new_c, c, pf, pi, pj, L_YDIM);
 
     /* new_h = self.act(new_c) * sigmoid(o) */
     vcp(c, new_c, L_YDIM);	
     vtanh(new_c, L_YDIM);
-    vsigmoid(o, L_YDIM);
-    vmul(new_h, new_c, o, L_YDIM);	
+    vsigmoid(po, L_YDIM);
+    vmul(new_h, new_c, po, L_YDIM);	
 
     /* self.state = [new_c, new_h] */
     vcp(h, new_h, L_YDIM);
